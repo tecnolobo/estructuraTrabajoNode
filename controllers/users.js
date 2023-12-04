@@ -1,37 +1,71 @@
 const {response,request} = require('express');
+const Usuario = require('../models/usuario');
+const encriptar = require('bcryptjs');
+const { existeEmail } = require('../midelware/validar-campos');
 
-
-const  usuarioGet=(req=request, resp=response)=>{
-
+const  usuarioGet= async(req=request, resp=response)=>{
   const body = req.body;
-  const query = req.query;
+  const {limite=5,desde=0} = req.query;
+  const query = {estado:true};
+
+  const usuarios=   Usuario.find(query)
+  .skip(Number(desde))
+  .limit(Number(limite));
+
+  const total =  Usuario.countDocuments(query);
+
+  const [usu,tot] =await Promise.all([
+    usuarios,
+    total
+  ]);
 
   resp.json({
-    msg:"Datos desde Controlador",
-    query
+    total:tot,
+    usaurios:usu
   });
 }
 
-const usuarioPost = (req,resp=response)=>{
+const usuarioPost = async (req,resp=response)=>{
+
+  const {nombre,correo,password,role} = req.body;
+  const usuario = new Usuario({nombre,correo,password,role});// lo unico que vamos a guardar en la base de datos
+
+  //encriptar passwors
+  const sal = encriptar.genSaltSync();//por defecto regresa 10 numero de vueltas para encriptar
+  usuario.password= encriptar.hashSync(usuario.password,sal);
+
+  await usuario.save();
+
+  resp.json({
+    usuario
+  });
+
+}
+const usuarioPut =  async(req,resp=response)=>{
   const {id} = req.params;
+
+  const {_id,password,google,...restoParam} = req.body; 
+
+  if(password){
+    const sal = encriptar.genSaltSync();//por defecto regresa 10 numero de vueltas para encriptar
+    restoParam.password= encriptar.hashSync(password,sal);
+  }
+
+  const usuario = await Usuario.findByIdAndUpdate(id,restoParam);
+
   resp.json({
-    msg:" dato desde usuarioPost",
-    body,
-    id
+    usuario
   });
 
 }
-const usuarioPut = (req,resp=response)=>{
+const usuarioDelete = async (req,resp=response)=>{
   
-  resp.json({
-    msg:" dato desde usuarioPut"
-  });
+  const {id} = req.params;
+  // const usuario =await Usuario.findByIdAndDelete(id);
+  const usuario = await Usuario.findByIdAndUpdate(id,{estado:false});
 
-}
-const usuarioDelete = (req,resp=response)=>{
-  
   resp.json({
-    msg:" dato desde usuarioDelete"
+    usuario
   });
 
 }
