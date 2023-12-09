@@ -1,8 +1,10 @@
-const {response,request} = require('express');
+const {response,request, json} = require('express');
 const Usuario = require('../models/usuario');
 const encriptar = require('bcryptjs');
 const { existeEmail } = require('../midelware/validar-campos');
 const { Generajwt } = require('../helpers/generearJsonWebToken');
+const { gogoleVerify } = require('../helpers/google-verity');
+const { usuarioPut } = require('./users');
 
 const  login= async(req=request, resp=response)=>{
   
@@ -54,8 +56,61 @@ const  login= async(req=request, resp=response)=>{
   
 }
 
+const googleSingin= async(req=request,resp=response)=>{
+
+  const {id_token} = req.body;
 
 
-module.exports ={login
+  try {
+    
+    const {nombre,correo,img} = await gogoleVerify(id_token);
+    
+    let usuario = await Usuario.findOne({correo});
+
+    if(!usuario){
+      //Creeamoa el usuarrio
+      const data={
+        nombre,
+        correo,
+        password:':P',
+        google:true
+      }
+
+      usuario = new Usuario(data);
+      await usuario.save();
+
+    }
+
+    //Si el usuario en base de datos
+    if(!usuario.estado){
+      return resp.status(401).json({
+        msg:'Hable con el administrador El usuario bloqueado'
+      });
+    }
+
+    //Generar mi jwt
+    const token = await Generajwt(usuario.id);
+
+    return resp.json({
+      usuario,
+      token
+    });
+
+
+  } catch (error) {
+    return resp.status(400).json({
+      ok:false,
+      msg:'El token no se pudo verificar'+error
+    });
+  }
+
+
+
+
+}
+
+
+
+module.exports ={login,googleSingin
   
 }

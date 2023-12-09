@@ -1,6 +1,6 @@
 const {Router} = require('express');
 const {check} = require('express-validator');
-const { login } = require('../controllers/auth');
+const { login, googleSingin } = require('../controllers/auth');
 const {validarCampos, existeEmail, existeUsuarioById} = require('../midelware/validar-campos');
 
 const route = Router();
@@ -12,6 +12,11 @@ route.post('/login',[
   validarCampos
 ],login);
 
+
+route.post('/google',[
+  check('id_token','El id Token es necesario').not().isEmpty(),
+  validarCampos
+],googleSingin);
 
 
 module.exports = route;
