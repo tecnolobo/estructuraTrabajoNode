@@ -1,10 +1,16 @@
 const Role = require('../models/role');
 
 const isRolevalid = async (role='')=>{
-  const existeRole = await Role.findOne({role});
-  if (!existeRole){
-    throw new Error('El role no existe ');
+
+  if (role){
+
+    const existeRole = await Role.findOne({role});
+    if (!existeRole){
+      throw new Error('El role no existe ');
+    }
+
   }
+  
 }
 
 

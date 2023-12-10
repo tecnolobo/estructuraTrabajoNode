@@ -4,15 +4,14 @@ const encriptar = require('bcryptjs');
 const { existeEmail } = require('../midelware/validar-campos');
 
 const  usuarioGet= async(req=request, resp=response)=>{
-  const body = req.body;
   const {limite=5,desde=0} = req.query;
   const query = {estado:true};
 
-  const usuarios=   Usuario.find(query)
+  const usuarios=  Usuario.find(query)
   .skip(Number(desde))
   .limit(Number(limite));
 
-  const total =  Usuario.countDocuments(query);
+  const total =   Usuario.countDocuments(query);
 
   const [usu,tot] =await Promise.all([
     usuarios,

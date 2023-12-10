@@ -57,7 +57,7 @@
     btngoogle.onclick = ()=>{
       console.log(google.accounts.id);
       google.accounts.id.revoke(localStorage.getItem('correo'),done=>{
-        localStorage.clear();
+        localStorage.clear('correo');
         location.reload();
       });
       
