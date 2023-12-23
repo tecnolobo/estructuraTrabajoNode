@@ -45,4 +45,31 @@ const validarJwt = async(req=request,resp=response,next)=>{
 
 }
 
-module.exports = {validarJwt}
+const verifJwtFromSocket = async (token='')=>{
+  
+  try {
+    if(token <=10){
+      return null;
+    }
+
+    const {uid} =jwt.verify(token,process.env.SECRETPUBLICKEY); // si noi es valido genera un trwoerrro
+    
+    const usuariAutenticado = await Usuario.findById(id=uid);
+
+    if(usuariAutenticado){
+      if(usuariAutenticado.estado){
+        return usuariAutenticado;
+      }else{
+        return null;
+      }
+    }else{
+      return null;
+    }
+
+  } catch (error) {
+    
+  }
+
+}
+
+module.exports = {validarJwt,verifJwtFromSocket}

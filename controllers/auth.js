@@ -104,13 +104,17 @@ const googleSingin= async(req=request,resp=response)=>{
     });
   }
 
+}
 
+const renovarToken = async(req=request,resp=response)=>{
+  const {usaurioAutenticado} = req;
 
+  //Renovamos el JWT
+  const token = await Generajwt(usaurioAutenticado.id);
 
+  return resp.json({usaurioAutenticado,token});
 }
 
 
 
-module.exports ={login,googleSingin
-  
-}
+module.exports ={login,googleSingin,renovarToken}

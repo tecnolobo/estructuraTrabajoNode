@@ -5,66 +5,48 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gogole Singin</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
 </head>
-<body>
-  <h1>Gogole Singin</h1>
-  <hr>
+<body class="container">
 
-  <div id="g_id_onload"
-        data-client_id="153776280146-d0dfe0vs71tjpi48rf1er9snmo8pm7q7.apps.googleusercontent.com"
-        data-callback="handleCredentialResponse"
-        data-auto_prompt="false">
+
+  <div class="row mt-5">
+    <div class="col-sm-6">
+      <h1>Gogole Singin</h1>
+      <hr>
+      <div id="g_id_onload"
+            data-client_id="153776280146-d0dfe0vs71tjpi48rf1er9snmo8pm7q7.apps.googleusercontent.com"
+            data-callback="handleCredentialResponse"
+            data-auto_prompt="false">
+      </div>
+      <div class="g_id_signin"
+          data-type="standard"
+          data-size="large"
+          data-theme="outline"
+          data-text="sign_in_with"
+          data-shape="rectangular"
+          data-logo_alignment="left">
+      </div>
+
+      <button class="btn btn-primary" id="googleSinoute">Sing out</button>
+      <script src="https://accounts.google.com/gsi/client" async></script>
+
+    </div>
+    <div class="col-sm-6">
+      <h1>login</h1>
+      <hr>
+      <form class="d-grid">
+        <input type="text" name="correo" class="mb-2 form-control">
+        <input type="text" name="password" class="mb-2 form-control">
+        <button type="submit" class="btn btn-primary">Ingresar</button>
+      </form>
+    </div>
   </div>
-  <div class="g_id_signin"
-      data-type="standard"
-      data-size="large"
-      data-theme="outline"
-      data-text="sign_in_with"
-      data-shape="rectangular"
-      data-logo_alignment="left">
-  </div>
-  <button id="googleSinoute">Sing out</button>
-  <script src="https://accounts.google.com/gsi/client" async></script>
 
-  <script>
-    function handleCredentialResponse(response) {
-      
-      const body = {id_token:response.credential};
-
-      fetch('http://localhost:8080/api/auth/google/',
-      {
-        method:'POST',
-        headers:{
-          'Content-Type':'application/json'
-        },
-        body:JSON.stringify(body)
-      }
-      )
-      .then((resp)=>resp.json())
-      .then(resp=>{
-        localStorage.setItem('correo',resp.usuario.correo);
-        console.log(resp);
-      })
-      .catch(console.warn);
-
-      //  console.log('id token',response.credential);
   
-       
-    }
 
-    const btngoogle = document.getElementById('googleSinoute');
-
-    btngoogle.onclick = ()=>{
-      console.log(google.accounts.id);
-      google.accounts.id.revoke(localStorage.getItem('correo'),done=>{
-        localStorage.clear();
-        location.reload();
-      });
-      
-
-    }
-
-  </script>
+  
+  <script src="./js/auth.js"></script>
 
 </body>
 </html>

@@ -2,12 +2,17 @@ const express = require('express')
 require('dotenv').config();
 const cors = require('cors');
 const { dbConection } = require('../DB/config');
+const {socketControlador} = require('../sockets/socketControlador');
+
 
 class Server {
 
 
   constructor(app){
     this.app = express();
+    this.server = require('http').createServer(this.app);
+    this.io = require('socket.io')(this.server);
+
     this.port = process.env.PORT|| 3000;
     this.usuarioPath = '/api/usuarios';
     this.authPath = '/api/auth';
@@ -18,6 +23,10 @@ class Server {
     //midelware
     this.middelware();
     this.route();
+
+    //sockets
+    this.sockects();
+
   }
 
   async conectarBatabase (){
@@ -41,10 +50,14 @@ class Server {
 
 
   lister(){
-    this.app.listen(this.port,()=>{
+    this.server.listen(this.port,()=>{
       console.log('Servidro corriendo en el puerto '+this.port);
     });
 
+  }
+
+  sockects(){
+    this.io.on('connection', (socket)=>socketControlador(socket,this.io));
   }
 
 }
